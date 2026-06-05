@@ -2,62 +2,49 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { 
-  LayoutDashboard, 
-  Settings, 
-  LogOut, 
-  PlusCircle, 
-  ClipboardList, 
-  Users, 
-  Activity,
-  History,
-  ShieldAlert
-} from "lucide-react";
-import { motion } from "framer-motion";
+import { LogOut, Activity } from "lucide-react";
+import { signOut } from "next-auth/react";
 
 const Sidebar = ({ role, items }) => {
   const pathname = usePathname();
 
   return (
-    <div className="w-[var(--sidebar-width)] h-screen glass-panel rounded-none border-y-0 border-l-0 flex flex-col p-6 sticky top-0 overflow-y-auto">
-      <div className="flex items-center gap-3 mb-12 px-2">
-        <Activity className="w-8 h-8 text-[#00f2ff]" />
-        <h1 className="text-xl font-bold tracking-tight">BioGuard</h1>
+    <div className="sidebar">
+      <div className="nav-brand">
+        <Activity className="w-6 h-6" />
+        <span>BioGuard</span>
       </div>
 
-      <nav className="flex-1 flex flex-col gap-2">
-        {items.map((item) => {
-          const isActive = pathname === item.href;
-          return (
-            <Link key={item.name} href={item.href}>
-              <motion.div
-                whileHover={{ x: 5 }}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                  isActive 
-                  ? "bg-[#00f2ff]/10 text-[#00f2ff] border border-[#00f2ff]/20" 
-                  : "text-[#94a3b8] hover:text-white"
-                }`}
-              >
+      <div className="nav-section mt-4">
+        <p className="nav-label">MAIN</p>
+        <nav className="flex flex-col">
+          {items.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link key={item.name} href={item.href} className={`nav-item ${isActive ? "active" : ""}`}>
                 {item.icon}
-                <span className="font-medium">{item.name}</span>
-              </motion.div>
-            </Link>
-          );
-        })}
-      </nav>
+                <span>{item.name}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
 
-      <div className="mt-auto flex flex-col gap-4">
-        <div className="p-4 rounded-xl bg-white/5 border border-white/5">
-          <p className="text-xs text-[#64748b] mb-1">LOGGED IN AS</p>
-          <p className="text-sm font-semibold uppercase tracking-wider text-[#00ff88]">{role}</p>
-        </div>
-        
-        <Link href="/">
-          <div className="flex items-center gap-3 px-4 py-3 rounded-xl text-[#ff4757] hover:bg-[#ff4757]/10 transition-all cursor-pointer">
-            <LogOut className="w-5 h-5" />
-            <span className="font-medium">Logout</span>
+      <div className="mt-auto nav-section">
+        <p className="nav-label">ACCOUNT</p>
+        <div className="flex flex-col">
+          <div className="nav-item cursor-default text-xs" style={{ background: "transparent" }}>
+            <span className="font-bold text-slate-400 uppercase">Role: {role}</span>
           </div>
-        </Link>
+          <button
+            type="button"
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            className="nav-item text-slate-500 hover:text-red-500 w-full text-left"
+          >
+            <LogOut className="w-5 h-5" />
+            <span>Log out</span>
+          </button>
+        </div>
       </div>
     </div>
   );

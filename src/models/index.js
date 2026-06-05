@@ -2,9 +2,10 @@ import mongoose from "mongoose";
 
 // --- USER MODEL ---
 const userSchema = new mongoose.Schema({
-  name: String,
-  email: { type: String, unique: true },
-  role: { type: String, enum: ["client", "admin", "tech"], default: "client" },
+  name: { type: String, required: true, trim: true },
+  email: { type: String, unique: true, required: true, lowercase: true, trim: true },
+  passwordHash: { type: String, required: true },
+  role: { type: String, enum: ["vendor", "admin", "tenant"], default: "tenant" },
   hospital: String,
   image: String,
 }, { timestamps: true });
@@ -17,6 +18,7 @@ const deviceSchema = new mongoose.Schema({
   model: String,
   serialNumber: { type: String, unique: true },
   hospitalName: String,
+  tenantId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   purchaseDate: Date,
   lastServiceDate: Date,
   nextServiceDate: Date, // For PM (6-month rule)
@@ -32,10 +34,10 @@ const ticketSchema = new mongoose.Schema({
   hospitalId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   description: String,
   errorCode: String,
-  priority: { type: String, enum: ["low", "high", "critical"], default: "normal" },
+  priority: { type: String, enum: ["low", "normal", "high", "critical"], default: "normal" },
   status: { type: String, enum: ["received", "assigned", "in-repair", "completed"], default: "received" },
   media: [String], // S3 or Cloudinary URLs
-  assignedTechId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  assignedVendorId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   resolutionNotes: String,
   signature: String, // Base64 signature
   completionDate: Date,
