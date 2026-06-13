@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ShieldCheck, Activity, Search } from "lucide-react";
+import { ShieldCheck, Search, Activity } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function MyDevicesPage() {
   const [devices, setDevices] = useState([]);
@@ -28,7 +29,7 @@ export default function MyDevicesPage() {
         <div>
           <h1 className="text-3xl font-bold text-slate-800 flex items-center gap-3">
             <ShieldCheck className="text-primary w-8 h-8" />
-            Device Inventory
+            My Devices
           </h1>
           <p className="text-slate-500 mt-2">Manage and view all your clinical assets in one place.</p>
         </div>
@@ -53,23 +54,21 @@ export default function MyDevicesPage() {
             <table className="med-table">
               <thead>
                 <tr>
-                  <th>Device Name</th>
-                  <th>Serial Number</th>
-                  <th>Location</th>
-                  <th>Status</th>
+                  <th>Equipment Name</th>
+                  <th>Department</th>
+                  <th>Make</th>
+                  <th>Model</th>
+                  <th>Serial No (SN No)</th>
                 </tr>
               </thead>
               <tbody>
-                {devices.map((device) => (
-                  <tr key={device._id}>
-                    <td className="font-semibold text-slate-800">{device.name}</td>
-                    <td className="text-slate-500">{device.serialNumber}</td>
-                    <td>{device.location}</td>
-                    <td>
-                      <span className={`status-tag ${device.status === 'active' ? 'tag-green' : device.status === 'malfunctioning' ? 'tag-red' : 'tag-amber'}`}>
-                        {device.status.toUpperCase()}
-                      </span>
-                    </td>
+                {devices.map((device, index) => (
+                  <tr key={device._id || device.serialNumber || index}>
+                    <td className="font-semibold text-slate-800">{device.name || "N/A"}</td>
+                    <td className="text-slate-500">{device.department || "N/A"}</td>
+                    <td>{device.make || "N/A"}</td>
+                    <td>{device.model || "N/A"}</td>
+                    <td className="font-mono text-sm text-slate-500">{device.serialNumber || "N/A"}</td>
                   </tr>
                 ))}
               </tbody>

@@ -1,0 +1,12 @@
+[
+  {
+    "_id": "guhhv7y48",
+    "deviceId": "Medtronic CPAP Machine (SN: SN-781377)",
+    "hospitalId": "60d5ecb8b392d700153ee101",
+    "priority": "low",
+    "status": "received",
+    "issueDescription": "test",
+    "errorCode": "test",
+    "createdAt": "2026-06-13T11:12:23.626Z"
+  }
+]

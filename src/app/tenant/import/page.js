@@ -19,6 +19,9 @@ const TARGET_FIELDS = [
   { id: "name", label: "Device Name", required: true },
   { id: "serialNumber", label: "Serial Number", required: true },
   { id: "location", label: "Location / Ward", required: true },
+  { id: "department", label: "Department", required: false },
+  { id: "make", label: "Make", required: false },
+  { id: "model", label: "Model", required: false },
   { id: "purchaseDate", label: "Purchase Date", required: false },
   { id: "nextServiceDate", label: "Next PM Date", required: false },
 ];
@@ -88,7 +91,10 @@ export default function BulkImportPage() {
     setIsProcessing(true);
     
     try {
-      const res = await fetch("/api/devices", {
+      const isDemo = typeof window !== "undefined" && window.location.search.includes("demo=1");
+      const url = isDemo ? "/api/devices?demo=1" : "/api/devices";
+
+      const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ devices: previewData })
@@ -97,7 +103,8 @@ export default function BulkImportPage() {
       if (res.ok) {
         setStep(4);
       } else {
-        alert("Import failed. Serial numbers might be duplicated.");
+        const errorData = await res.json();
+        alert(`Import failed: ${errorData.error || "Serial numbers might be duplicated."}`);
       }
     } catch (e) {
       console.error(e);

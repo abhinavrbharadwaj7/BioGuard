@@ -39,17 +39,23 @@ export default function TenantDashboard() {
 
   const faultyCount = devices.filter(d => d.status === "malfunctioning").length;
   const inRepairCount = devices.filter(d => d.status === "under-repair").length;
+  const condemnedCount = devices.filter(d => d.status === "condemned").length;
+  const activeCount = devices.length - condemnedCount; // Assuming active is all non-condemned, or maybe just operational. Let's just use total devices for now or operational + in-repair + faulty.
   
   const now = new Date();
   const nextMonth = new Date();
   nextMonth.setMonth(now.getMonth() + 1);
+  
   const pmDueCount = devices.filter(d => d.nextServiceDate && new Date(d.nextServiceDate) <= nextMonth).length;
+  const calibDueCount = devices.filter(d => d.calibDueDate && new Date(d.calibDueDate) <= nextMonth).length;
 
   const stats = [
-    { label: "Active Devices", value: devices.length.toString(), trend: "+12", trendType: "up", icon: ShieldCheck, tone: "blue" },
-    { label: "Faulty Units", value: faultyCount.toString(), trend: "-2", trendType: "down", icon: AlertTriangle, tone: "red" },
-    { label: "In Repair", value: inRepairCount.toString(), trend: "+1", trendType: "up", icon: Wrench, tone: "amber" },
-    { label: "PM Due", value: pmDueCount.toString(), trend: "5", trendType: "up", icon: CalendarClock, tone: "green" },
+    { label: "Active Devices", value: activeCount.toString(), icon: ShieldCheck, tone: "blue" },
+    { label: "Faulty Units", value: faultyCount.toString(), icon: AlertTriangle, tone: "red" },
+    { label: "In Repair", value: inRepairCount.toString(), icon: Wrench, tone: "amber" },
+    { label: "PM Due Date", value: pmDueCount.toString(), icon: CalendarClock, tone: "green" },
+    { label: "Calib Due Date", value: calibDueCount.toString(), icon: Clock, tone: "cyan" },
+    { label: "Condemned Devices", value: condemnedCount.toString(), icon: AlertTriangle, tone: "gray" },
   ];
 
   const recentTickets = tickets.slice(0, 5).map(t => ({
@@ -77,9 +83,6 @@ export default function TenantDashboard() {
               </div>
               <div className="stat-value-row">
                 <span className="stat-value">{stat.value}</span>
-                <span className={`trend-badge trend-${stat.trendType}`}>
-                  {stat.trendType === "up" ? "↗" : "↘"} {stat.trend}
-                </span>
               </div>
             </div>
           );
